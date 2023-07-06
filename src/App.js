@@ -1,24 +1,37 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import { HashRouter as Router, Switch, Route, Link } from 'react-router-dom';
+import EmailInput from './EmailInput';
+import GenerateLinkButton from './GenerateLinkButton';
+import WelcomePage from './WelcomePage';
 
 function App() {
+  const [email, setEmail] = useState('');
+  const [generatedLink, setGeneratedLink] = useState('');
+
+  const handleEmailChange = (event) => {
+    setEmail(event.target.value);
+  };
+
+  const handleGenerateLink = () => {
+    // Здесь можно добавить логику для генерации ссылки
+    const generatedLink = '/welcome'; // Здесь пример условной ссылки
+    setGeneratedLink(generatedLink);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Switch>
+        <Route exact path="/">
+          <h1>Your email</h1>
+          <EmailInput value={email} onChange={handleEmailChange} />
+          <GenerateLinkButton onClick={handleGenerateLink} />
+          {generatedLink && <Link to={generatedLink}>Тут будет сгенерированная ссылка*</Link>}
+        </Route>
+        <Route path="/welcome">
+          <WelcomePage />
+        </Route>
+      </Switch>
+    </Router>
   );
 }
 
