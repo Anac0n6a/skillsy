@@ -13,8 +13,7 @@ function App() {
   };
 
   const handleGenerateLink = () => {
-    // Здесь можно добавить логику для генерации ссылки
-    const generatedLink = '/welcome'; // Здесь пример условной ссылки
+    const generatedLink = '/welcome';
     setGeneratedLink(generatedLink);
   };
 
