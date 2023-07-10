@@ -5,7 +5,6 @@ function Page2({ onNext }) {
     const history = useHistory();
   
     const handleNext = () => {
-      onNext();
       history.push('/page3');
     };
   
