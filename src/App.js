@@ -12,7 +12,7 @@ import Result from './Result';
 
 function App() {
 
-  
+
 
   const [email, setEmail] = useState('');
   const [generatedLink, setGeneratedLink] = useState('');
@@ -28,10 +28,27 @@ function App() {
     if (isValidEmail) {
       const generatedLink = '/welcome';
       setGeneratedLink(generatedLink);
-    } else {
-      alert('Некорректный email!');
-    }
-  };
+
+    // Отправка POST-запроса к API
+    fetch('http://localhost:3000/check/email', { // Тут нужно вставить ссылку на написанное api
+      method: 'POST',
+      body: JSON.stringify({ email: email }), // Отправляем введенный email
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(response => response.json())
+      .then(data => {
+        // Обработка ответа от API
+        console.log(data.link);
+      })
+      .catch(error => {
+        console.error('Ошибка:', error);
+      });
+  } else {
+    alert('Некорректный email!');
+  }
+};
 
   const validateEmail = (email) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
