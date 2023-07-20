@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Switch, Route, Link, Redirect} from 'react-router-dom';
+import { BrowserRouter as Router, Switch, Route, Link, Redirect } from 'react-router-dom';
 import EmailInput from './EmailInput';
 import GenerateLinkButton from './GenerateLinkButton';
 import { count } from './GenerateLinkButton';
@@ -9,14 +9,13 @@ import Page2 from './Page2';
 import Page3 from './Page3';
 import Page4 from './Page4';
 import Result from './Result';
+import axios from 'axios';
 
 function App() {
-
-
-
   const [email, setEmail] = useState('');
   const [generatedLink, setGeneratedLink] = useState('');
   const [isValidEmail, setIsValidEmail] = useState(true);
+  const [responseText, setResponseText] = useState('');
 
   const handleEmailChange = (event) => {
     const emailValue = event.target.value;
@@ -29,26 +28,26 @@ function App() {
       const generatedLink = '/welcome';
       setGeneratedLink(generatedLink);
 
-    // Отправка POST-запроса к API
-    fetch('http://localhost:3000/check/email', { // Тут нужно вставить ссылку на написанное api
-      method: 'POST',
-      body: JSON.stringify({ email: email }), // Отправляем введенный email
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-      .then(response => response.json())
-      .then(data => {
-        // Обработка ответа от API
-        console.log(data.link);
+      // Отправка POST-запроса с использованием Axios
+      const url = 'http://localhost:4567/check/email';
+      const data = { email: email };
+
+      axios.post(url, data,{
+        withCredentials: true
       })
-      .catch(error => {
-        console.error('Ошибка:', error);
-      });
-  } else {
-    alert('Некорректный email!');
-  }
-};
+
+        .then((response) => {
+          console.log(response.data); // Вывод ответа в консоль
+          setResponseText(response.data.link);
+          // Дальнейшая обработка ответа
+        })
+        .catch((error) => {
+          console.error('Ошибка:', error);
+        });
+    } else {
+      alert('Некорректный email!');
+    }
+  };
 
   const validateEmail = (email) => {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -60,9 +59,12 @@ function App() {
       <Switch>
         <Route exact path="/">
           <h1>Ваш email</h1>
+          {responseText && <p>{responseText}</p>}
           <EmailInput value={email} onChange={handleEmailChange} />
           <GenerateLinkButton onClick={handleGenerateLink} />
-          {isValidEmail && generatedLink && <Link to={generatedLink}>Тут будет сгенерированная ссылка*</Link>}
+          {isValidEmail && generatedLink && (
+            <Link to={generatedLink}>Тут будет сгенерированная ссылка*</Link>
+          )}
           {!isValidEmail && count >= 1 && <p>Некорректный email!</p>}
         </Route>
         <Route path="/welcome">
@@ -83,10 +85,12 @@ function App() {
         <Route path="/result">
           <Result />
         </Route>
-        <Redirect to="/"/>
+        <Redirect to="/" />
       </Switch>
     </Router>
   );
 }
+
+
 
 export default App;
