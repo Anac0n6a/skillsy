@@ -29,7 +29,7 @@ function App() {
       setGeneratedLink(generatedLink);
 
       // Отправка POST-запроса с использованием Axios
-      const url = 'http://localhost:4567/check/email';
+      const url = 'http://161.35.155.10:4567/check/email';
       const data = { email: email };
 
       axios.post(url, data,{
