@@ -60,6 +60,7 @@ function App() {
         <Route exact path="/">
           <h1>Ваш email</h1>
           {responseText && <p>{responseText}</p>}
+          {/* /включать только при debug */}
           <EmailInput value={email} onChange={handleEmailChange} />
           <GenerateLinkButton onClick={handleGenerateLink} />
           {isValidEmail && generatedLink && (
@@ -67,6 +68,7 @@ function App() {
           )}
           {!isValidEmail && count >= 1 && <p>Некорректный email!</p>}
         </Route>
+        {/* переход  на welcome = <Route path={generatedLink}></Route> */}
         <Route path="/welcome">
           <WelcomePage />
         </Route>

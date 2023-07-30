@@ -10,7 +10,7 @@ function GenerateLinkButton({ onClick }) {
     onClick(); 
   }; 
  
-  count = localCount; // обновляем значение переменной count 
+  count = localCount; // обновляем значение переменной count. Счетчик нажатия кнопки "Сгенирировать ссылку"
  
   return ( 
     <div> 
