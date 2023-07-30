@@ -32,9 +32,7 @@ function App() {
       const url = 'http://161.35.155.10:4567/check/email';
       const data = { email: email };
 
-      axios.post(url, data,{
-        withCredentials: true
-      })
+      axios.post(url, data)
 
         .then((response) => {
           console.log(response.data); // Вывод ответа в консоль
