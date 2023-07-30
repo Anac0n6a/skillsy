@@ -1,70 +1,76 @@
-# Getting Started with Create React App
+# Сборка проекта, запуск, деплой и настройки nginx
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Запуск и сборка локально
 
-## Available Scripts
-
-In the project directory, you can run:
+Что бы запустить проект локально, нужно перейти в дирректорию проекта и выполнить команду:
 
 ### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Далее ваш проект запуститься и откроется ссылка в браузере по умолчанию http://localhost:3000.\
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Что бы собрать билд, вополните команду: 
 
 ### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+После этой команды проект соберется в папку build.\
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Что бы запустить собранный build, выполните команду:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### `serve -s build`
 
-### `npm run eject`
+Эта команда запустит билд. Адресс по умолчанию http://localhost:3000.\
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Копирование build на удаленный сервер
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Что-бы скопировать папку билд, перейдите в терминали в дирректорию, где лежит папка build, затем выполните команду:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### `scp -r /path/to/folder user@host:/path/to/desired/folder`
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+После этого, вся папка билд скопируется с локального компьютера на удаленный сервер.
 
-## Learn More
+## Установка nginx на удаленный сервер
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Что бы установить nginx на удаленный сервер? выполните команды по очереди:
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### `sudo apt update` - Эта команда обновитсписко пакетов
+### `sudo apt install nginx` - Установка nginx
 
-### Code Splitting
+## Деплой папки build на сервере:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+После установки nginx, перейдите по пути до конфига nginx `/etc/nginx/sites-enabled`\
+Там будет один файл `default`, передите в него используя nano. `sudo nano default`\
 
-### Analyzing the Bundle Size
+Далее удалите все что там прописано по умолчанию. И запишите следующее:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+```
+server {  
+    server_name yourdomainname.com;  
+    location / {  
+        proxy_set_header Host $host:$server_port;  
+        root /path/to/folder;  
+        index index.html;  
+        try_files $uri $uri/ /index.html;  
+    }  
+}  
+```
+Выйдите из редактора nano и проверьте правильность написания конфига командой `sudo nginx -t`\
+Если все хорошо, то запустите nginx `sudo systemctl start nginx`\
+При следующих изменениях конфига можно использовать `sudo systemctl restart nginx`\
+Что бы остановить nginx `sudo systemctl stop nginx` \
 
-### Making a Progressive Web App
+После этого перейдите по фашему доменному имени и проверьте что все работает
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## Установка сертификата для nginx 
 
-### Advanced Configuration
+Что бы установить сертификат для вашего доменного имени в nginx, нужно установть certbot\
+Выполните эти команды по очереди:
+```
+sudo apt-get update
+sudo apt-get install certbot python3-certbot-nginx
+```
+После установки certbot на ваш сервер, выполните команду и далее следуйте инструкциям certbot-а. Нужно будет также указать email\
+`sudo certbot --nginx`
+После этого в ваш nginx default добаятся новые строки с путем до сертификата и указанием нового порта для https\
+Перезагрузите nginx командой `sudo systemctl restart nginx` и проверьте что ваш сайт работает с сертификатом по адрессу с https
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
 
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
