@@ -73,4 +73,15 @@ sudo apt-get install certbot python3-certbot-nginx
 После этого в ваш nginx default добаятся новые строки с путем до сертификата и указанием нового порта для https\
 Перезагрузите nginx командой `sudo systemctl restart nginx` и проверьте что ваш сайт работает с сертификатом по адрессу с https
 
+## Путь до сертификата
+`/etc/letsencrypt/renewal/getflow.me.conf`
+
+## Пути до ключей сертификата
+```
+/etc/letsencrypt/live/getflow.me/fullchain.pem
+/etc/letsencrypt/live/getflow.me/privkey.pem
+/etc/letsencrypt/options-ssl-nginx.conf
+/etc/letsencrypt/ssl-dhparams.pem
+```
+
 
